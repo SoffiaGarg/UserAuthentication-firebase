@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import Title from '../Basic-Components/title';
 import TextBox from '../Basic-Components/textbox';
 import Button from '../Basic-Components/button';
-import Popup from '../Basic-Components/popup';
 import logo from '../../assets/images/login.jpg';
 import { Link } from "react-router-dom";
 import '../../assets/styles.css';
 import {setAccessToken, validateAccessToken} from '../../Utils/universal';
+import {API_ROUTE} from '../../Config/config';
+import {SuccessMsg,ErrorMsg} from '../../Utils/message';
 
 class Login extends Component {
     state = {
@@ -52,7 +53,7 @@ class Login extends Component {
             this.setState({
                 waiting:true
             })
-            let url = 'https://us-central1-userauthentication-96039.cloudfunctions.net/login';
+            let url = API_ROUTE.LOGIN;
             let loginUser = await fetch(url, {
                 method: 'post',
                 headers: { 'Content-Type': 'application/json' },
@@ -71,7 +72,7 @@ class Login extends Component {
                 let message = result.message || 'Email or Password is Wrong'
                 if(result.status===401){
                     message = <div>
-                        {result.message} -s <a style={{"color":"red"}} href="./signUp">Sign Up</a>
+                        {result.message} <a style={{"color":"red"}} href="./signUp">Sign Up</a>
                     </div>
                 }
                 this.setState({
@@ -84,25 +85,25 @@ class Login extends Component {
             if (!email) {
                 this.setState({
                     popup: true,
-                    errorMsg: "Email is Missing.",
+                    errorMsg: ErrorMsg.EMAIL_MISSING,
                     loading:false
                 })
             } else this.setState({
                 popup: true,
-                errorMsg: "Password is Missing",
+                errorMsg: ErrorMsg.PASSWORD_MISSING,
                 loading:false
             })
         }
     }
 
     render() {
-        let popup = null;
+        let errorMsg = null;
         if (this.state.popup && this.state.errorMsg) {
-            popup = <Popup message={this.state.errorMsg} onClosePopup={this.onClosePopup} />
+            errorMsg = <h3 style={{color:"red"}}>{this.state.errorMsg}</h3>
         }
         let loadingData= null;
         if(this.state.waiting && this.state.loading){
-            loadingData = <div style = {{"margin-left":"10px"}}><center><h3>... LOADING, PLEASE WAIT</h3></center></div>
+            loadingData = <div style = {{"marginLeft":"10px"}}><center><h3>... LOADING, PLEASE WAIT</h3></center></div>
         }
         return (
             <div>
@@ -110,11 +111,11 @@ class Login extends Component {
                  {loadingData}
                 <div className="form">
                     <img className="formImg" src= {logo} alt="Login User" />
-                    <TextBox name={"email"} onChangeHandler={this.onChangeHandler} />
-                    <TextBox name={"password"} type={"password"} onChangeHandler={this.onChangeHandler} />
+                    {errorMsg}
+                    <TextBox name={"email"} onChangeHandler={this.onChangeHandler} /><br/>
+                    <TextBox name={"password"} type={"password"} onChangeHandler={this.onChangeHandler} /><br/>
                     <Button name={"Log In"} onClickHandler={this.onClickHandler} />
                     <p className="signupLink">Not sign up yet? Do not worry <Link to="./signUp">sign up</Link></p>
-                    {popup}
                 </div>
             </div>
         )

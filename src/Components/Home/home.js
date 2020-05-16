@@ -3,6 +3,7 @@ import '../../assets/styles.css';
 import Title from '../Basic-Components/title';
 import Button from '../Basic-Components/button';
 import { getAccessToken, validateAccessToken, deleteAccessToken } from '../../Utils/universal';
+import {API_ROUTE} from '../../Config/config';
 
 /**
  * ------------------------------------------------------------------------------------------------------------
@@ -38,7 +39,7 @@ class Home extends Component {
                 waiting:true
             })
             let token = getAccessToken();
-            let url = "https://us-central1-userauthentication-96039.cloudfunctions.net/getUser";
+            let url = API_ROUTE.GET_USER;
             let userData = await fetch(url, {
                 method: 'get',
                 headers: {
@@ -47,7 +48,6 @@ class Home extends Component {
                 },
             })
             let result = await userData.json();
-            console.log("resul===", result);
             if (result && result.status === 200 && result.data) {
                 this.setState({
                     name: result.data.name,
@@ -61,7 +61,7 @@ class Home extends Component {
     render() {
         let loadingData= null;
         if(this.state.waiting && this.state.loading){
-            loadingData = <div style = {{"margin-left":"10px"}}><center><h3>... LOADING, PLEASE WAIT</h3></center></div>
+            loadingData = <div style = {{"marginLeft":"10px"}}><center><h3>... LOADING, PLEASE WAIT</h3></center></div>
         }
         return (
             <div>
